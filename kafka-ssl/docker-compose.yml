@@ -1,0 +1,79 @@
+---
+version: '2'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:6.1.1
+    ports:
+      - 2181:2181
+      # - 2182:2182
+    container_name: zookeeper
+    volumes:
+      - ./security:/etc/kafka/secrets
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      # TODO ADD ZK SECURITY
+      # ZOOKEEPER_SECURE_CLIENT_PORT: 2182
+      ZOOKEEPER_TICK_TIME: 2000
+      # ZOOKEEPER_SERVER_CNXN_FACTORY: org.apache.zookeeper.server.NettyServerCnxnFactory
+      # ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/zookeeper-signed.crt
+      # ZOOKEEPER_SSL_KEYSTORE_PASSWORD: codingharbour
+      # ZOOKEEPER_SSL_KEYSTORE_TYPE: PEM
+      # ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/root.crt
+      # ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: codingharbour
+      # ZOOKEEPER_SSL_TRUSTSTORE_TYPE: PEM
+      # ZOOKEEPER_SSL_CLIENT_AUTH: need
+      # ZOOKEEPER_AUTH_PROVIDER_X509: org.apache.zookeeper.server.auth.X509AuthenticationProvider 
+
+  broker:
+    image: confluentinc/cp-kafka:6.1.1
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+      - 9093:9093
+    container_name: broker
+    volumes:
+      - ./security:/etc/kafka/secrets 
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092,SSL://broker:29093,SSL_HOST://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,SSL:SSL,SSL_HOST:SSL
+      KAFKA_INTER_BROKER_LISTENER_NAME: SSL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+
+      # KAFKA_ZOOKEEPER_CONNECT: zookeeper:2182
+      # KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: 'true'
+      # KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
+      # KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/broker-signed.crt
+      # KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: codingharbour
+      # KAFKA_ZOOKEEPER_SSL_KEYSTORE_TYPE: PEM
+      # KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/root.crt
+      # KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: codingharbour
+      # KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_TYPE: PEM
+      # KAFKA_ZOOKEEPER_SET_ACL: 'true'
+
+      KAFKA_SSL_KEYSTORE_FILENAME: broker.keystore.jks
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: credentials
+      KAFKA_SSL_KEY_CREDENTIALS: credentials
+      KAFKA_SSL_TRUSTSTORE_FILENAME: truststore.jks
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: credentials
+      KAFKA_SSL_CLIENT_AUTH: "required"
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: 'true'
+
+      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
+
+  # schema-registry:
+  #   image: confluentinc/cp-schema-registry:6.1.1
+  #   depends_on:
+  #     - zookeeper
+  #     - broker
+  #   ports:
+  #     - 8081:8081
+  #   container_name: schema-registry
+  #   environment:
+  #     SCHEMA_REGISTRY_HOST_NAME: schema-registry
+  #     SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper:2181'

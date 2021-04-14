@@ -1,0 +1,9 @@
+*.crt
+*.cer
+*.csr
+*.srl
+*.key
+credentials
+*.jks
+consumer.properties
+producer.properties
