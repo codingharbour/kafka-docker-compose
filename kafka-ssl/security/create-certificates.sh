@@ -12,7 +12,6 @@ if [ ! -f "$root_cert" ]; then
     -x509 \
     -days 365 \
     -newkey rsa:2048 \
-    -nodes \
     -keyout $root_key \
     -out $root_cert \
     -subj '/CN=root.codingharbourexample.com/OU=TEST/O=CodingHarbour/L=Oslo/C=NO' \
@@ -46,9 +45,9 @@ keytool -import \
   -keypass $password
 
 # create properties for producer and consumer
-CONSUMER_CERT=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' consumer-signed.crt)
-CONSUMER_KEY=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' consumer.key)
-TRUSTSTORE_CERT=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' root.crt)
+consumer_cert=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' consumer-signed.crt)
+consumer_key=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' consumer.key)
+truststore_cert=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' root.crt)
 
 echo
 echo "Create consumer.properties"
@@ -57,13 +56,14 @@ security.protocol=SSL
 ssl.keystore.type=PEM
 ssl.keystore.key.type=PEM
 ssl.truststore.type=PEM
-ssl.keystore.certificate.chain=$CONSUMER_CERT
-ssl.keystore.key=$CONSUMER_KEY
-ssl.truststore.certificates=$TRUSTSTORE_CERT
+ssl.keystore.certificate.chain=$consumer_cert
+ssl.keystore.key=$consumer_key
+ssl.key.password=$password
+ssl.truststore.certificates=$truststore_cert
 EOF
 
-PRODUCER_CERT=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' producer-signed.crt)
-PRODUCER_KEY=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' producer.key)
+producer_cert=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' producer-signed.crt)
+producer_key=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' producer.key)
 
 
 echo
@@ -73,9 +73,10 @@ security.protocol=SSL
 ssl.keystore.type=PEM
 ssl.keystore.key.type=PEM
 ssl.truststore.type=PEM
-ssl.keystore.certificate.chain=$PRODUCER_CERT
-ssl.keystore.key=$PRODUCER_KEY
-ssl.truststore.certificates=$TRUSTSTORE_CERT
+ssl.keystore.certificate.chain=$producer_cert
+ssl.keystore.key=$producer_key
+ssl.key.password=$password
+ssl.truststore.certificates=$truststore_cert
 EOF
 
 
