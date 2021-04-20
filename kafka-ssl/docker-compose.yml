@@ -12,17 +12,19 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       # TODO ADD ZK SECURITY
-      # ZOOKEEPER_SECURE_CLIENT_PORT: 2182
+      ZOOKEEPER_SECURE_CLIENT_PORT: 2182
       ZOOKEEPER_TICK_TIME: 2000
-      # ZOOKEEPER_SERVER_CNXN_FACTORY: org.apache.zookeeper.server.NettyServerCnxnFactory
+      ZOOKEEPER_SERVER_CNXN_FACTORY: org.apache.zookeeper.server.NettyServerCnxnFactory
       # ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/zookeeper-signed.crt
-      # ZOOKEEPER_SSL_KEYSTORE_PASSWORD: codingharbour
+      ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/zookeeper.keystore.jks
+      ZOOKEEPER_SSL_KEYSTORE_PASSWORD: codingharbour
       # ZOOKEEPER_SSL_KEYSTORE_TYPE: PEM
       # ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/root.crt
-      # ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: codingharbour
+      ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/truststore.jks
+      ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: codingharbour
       # ZOOKEEPER_SSL_TRUSTSTORE_TYPE: PEM
-      # ZOOKEEPER_SSL_CLIENT_AUTH: need
-      # ZOOKEEPER_AUTH_PROVIDER_X509: org.apache.zookeeper.server.auth.X509AuthenticationProvider 
+      ZOOKEEPER_SSL_CLIENT_AUTH: need
+      ZOOKEEPER_AUTH_PROVIDER_X509: org.apache.zookeeper.server.auth.X509AuthenticationProvider
 
   broker:
     image: confluentinc/cp-kafka:6.1.1
@@ -36,7 +38,7 @@ services:
       - ./security:/etc/kafka/secrets 
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      # KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092,SSL://broker:29093,SSL_HOST://localhost:9093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,SSL:SSL,SSL_HOST:SSL
       KAFKA_INTER_BROKER_LISTENER_NAME: SSL
@@ -45,15 +47,15 @@ services:
 
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
 
-      # KAFKA_ZOOKEEPER_CONNECT: zookeeper:2182
-      # KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: 'true'
-      # KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
-      # KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/broker-signed.crt
-      # KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: codingharbour
-      # KAFKA_ZOOKEEPER_SSL_KEYSTORE_TYPE: PEM
-      # KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/root.crt
-      # KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: codingharbour
-      # KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_TYPE: PEM
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2182
+      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: 'true'
+      KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/broker.keystore.jks
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: codingharbour
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_TYPE: JKS
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/truststore.jks
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: codingharbour
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_TYPE: JKS
       # KAFKA_ZOOKEEPER_SET_ACL: 'true'
 
       KAFKA_SSL_KEYSTORE_FILENAME: broker.keystore.jks
