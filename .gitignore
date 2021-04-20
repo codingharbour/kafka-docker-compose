@@ -7,3 +7,4 @@ credentials
 *.jks
 consumer.properties
 producer.properties
+producer-keypair.pem

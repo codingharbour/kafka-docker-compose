@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
 root_cert=root.crt
 root_key=root.key
 password=codingharbour
@@ -34,6 +36,8 @@ do
   echo
 done
 
+rm *.srl
+
 echo "Create a truststore"
 
 keytool -import \
@@ -47,37 +51,31 @@ keytool -import \
 # create properties for producer and consumer
 consumer_cert=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' consumer-signed.crt)
 consumer_key=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' consumer.key)
-truststore_cert=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' root.crt)
+truststore_cert=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' $root_cert)
 
 echo
-echo "Create consumer.properties"
+echo "Create consumer.properties with inline certificate, private key and truststore"
 cat <<EOF > consumer.properties
 security.protocol=SSL
 ssl.keystore.type=PEM
 ssl.keystore.key.type=PEM
-ssl.truststore.type=PEM
 ssl.keystore.certificate.chain=$consumer_cert
 ssl.keystore.key=$consumer_key
 ssl.key.password=$password
+ssl.truststore.type=PEM
 ssl.truststore.certificates=$truststore_cert
 EOF
 
-producer_cert=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' producer-signed.crt)
-producer_key=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' producer.key)
-
+#combine private key and cert in one file
+cat producer.key producer-signed.crt > producer-keypair.pem
 
 echo
-echo "Create producer.properties"
+echo "Create producer.properties that uses PEM files"
 cat <<EOF > producer.properties
 security.protocol=SSL
 ssl.keystore.type=PEM
-ssl.keystore.key.type=PEM
-ssl.truststore.type=PEM
-ssl.keystore.certificate.chain=$producer_cert
-ssl.keystore.key=$producer_key
+ssl.keystore.location=$DIR/producer-keypair.pem
 ssl.key.password=$password
-ssl.truststore.certificates=$truststore_cert
+ssl.truststore.type=PEM
+ssl.truststore.location=$DIR/$root_cert
 EOF
-
-
-rm *.srl
