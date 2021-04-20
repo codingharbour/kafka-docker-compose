@@ -21,15 +21,7 @@ if [ ! -f "$root_cert" ]; then
     -passout pass:$password
 fi
 
-for i in broker zookeeper
-do
-  echo "Create a JKS certificate for $i"
-  ./create-jks-certificate.sh $i
-  echo
-done
-
-
-for i in producer consumer
+for i in producer consumer broker zookeeper
 do
   echo "Create a certificate for $i"
   ./create-pem-certificate.sh $i
@@ -66,8 +58,7 @@ ssl.truststore.type=PEM
 ssl.truststore.certificates=$truststore_cert
 EOF
 
-#combine private key and cert in one file
-cat producer.key producer-signed.crt > producer-keypair.pem
+# cat producer.key producer-signed.crt > producer-keypair.pem
 
 echo
 echo "Create producer.properties that uses PEM files"
