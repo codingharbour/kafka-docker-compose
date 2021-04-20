@@ -50,7 +50,6 @@ echo "Create consumer.properties with inline certificate, private key and trusts
 cat <<EOF > consumer.properties
 security.protocol=SSL
 ssl.keystore.type=PEM
-ssl.keystore.key.type=PEM
 ssl.keystore.certificate.chain=$consumer_cert
 ssl.keystore.key=$consumer_key
 ssl.key.password=$password
