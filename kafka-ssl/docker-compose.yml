@@ -1,0 +1,75 @@
+---
+version: '2'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:6.1.1
+    container_name: zookeeper
+    volumes:
+      - ./security:/etc/kafka/secrets
+    command: "bash -c 'if [ ! -f /etc/kafka/secrets/zookeeper-keypair.pem ]; then echo \"ERROR: SSL certificates missing from /etc/kafka/secrets/ (did you remember to run ./start-cluster.sh instead of docker-compose up -d?)\" && exit 1 ; else /etc/confluent/docker/run ; fi'"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_SECURE_CLIENT_PORT: 2182
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SERVER_CNXN_FACTORY: org.apache.zookeeper.server.NettyServerCnxnFactory
+      ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/zookeeper-keypair.pem
+      ZOOKEEPER_SSL_KEYSTORE_PASSWORD: codingharbour
+      ZOOKEEPER_SSL_KEYSTORE_TYPE: PEM
+      ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/root.crt
+      ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: codingharbour
+      ZOOKEEPER_SSL_TRUSTSTORE_TYPE: PEM
+      ZOOKEEPER_SSL_CLIENT_AUTH: need
+      ZOOKEEPER_AUTH_PROVIDER_X509: org.apache.zookeeper.server.auth.X509AuthenticationProvider
+
+  broker:
+    image: confluentinc/cp-kafka:6.1.1
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+      - 9093:9093
+    container_name: broker
+    volumes:
+      - ./security:/etc/kafka/secrets
+    command: "bash -c 'if [ ! -f /etc/kafka/secrets/broker-keypair.pem ]; then echo \"ERROR: SSL certificates missing from /etc/kafka/secrets/ (did you remember to run ./start-cluster.sh instead of docker-compose up -d?)\" && exit 1 ; else /etc/confluent/docker/run ; fi'"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092,TLS://broker:29093,TLS_HOST://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,TLS:SSL,TLS_HOST:SSL
+      KAFKA_INTER_BROKER_LISTENER_NAME: TLS #cannot use SSL as name, due to bug in configure script
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2182
+      KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: 'true'
+      KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/broker-keypair.pem
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: codingharbour
+      KAFKA_ZOOKEEPER_SSL_KEYSTORE_TYPE: PEM
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/root.crt
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: codingharbour
+      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_TYPE: PEM
+
+      # option 1: provide certs as strings
+
+      # KAFKA_SSL_KEYSTORE_TYPE: PEM
+      # KAFKA_SSL_KEYSTORE_CERTIFICATE_CHAIN: -----BEGIN CERTIFICATE-----\nMII....\n-----END CERTIFICATE-----
+      # KAFKA_SSL_KEYSTORE_KEY: -----BEGIN ENCRYPTED PRIVATE KEY-----\nMIIE...\n-----END ENCRYPTED PRIVATE KEY-----
+      # KAFKA_SSL_KEY_PASSWORD: codingharbour
+      # KAFKA_SSL_TRUSTSTORE_TYPE: PEM
+      # KAFKA_SSL_TRUSTSTORE_CERTIFICATES: -----BEGIN CERTIFICATE-----\nMIID...\n-----END CERTIFICATE-----
+
+      # option 2: use pem files
+
+      KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/broker-keypair.pem
+      KAFKA_SSL_KEY_PASSWORD: codingharbour
+      KAFKA_SSL_KEYSTORE_TYPE: PEM
+      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/root.crt
+      KAFKA_SSL_TRUSTSTORE_TYPE: PEM
+
+      KAFKA_SSL_CLIENT_AUTH: "required"
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: 'true'
+
+      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
