@@ -57,8 +57,6 @@ ssl.truststore.type=PEM
 ssl.truststore.certificates=$truststore_cert
 EOF
 
-# cat producer.key producer-signed.crt > producer-keypair.pem
-
 echo
 echo "Create producer.properties that uses PEM files"
 cat <<EOF > producer.properties
