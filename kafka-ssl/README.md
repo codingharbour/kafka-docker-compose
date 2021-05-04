@@ -2,9 +2,9 @@
 
 To start the cluster execute `./start-cluster.sh`
 
-This will generate the root certificate and private keys and certificates for:
+This will generate the root certificate as well as private keys and certificates for:
 - broker
 - producer
 - consumer
 
-It will also create a `producer.properties` and `consumer.properties` files to be used with `kafka-console-consumer` and `kafka-console-producer`
+It will also create a `producer.properties` and `consumer.properties` files to be used with `kafka-console-*` CLI tools.
