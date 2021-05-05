@@ -4,6 +4,7 @@ To start the cluster execute `./start-cluster.sh`
 
 This will generate the root certificate as well as private keys and certificates for:
 - broker
+- zookeeper
 - producer
 - consumer
 
