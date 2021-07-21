@@ -16,6 +16,7 @@ openssl pkcs8 \
   -topk8 \
   -in $certname.key \
   -inform pem \
+  -v1 PBE-SHA1-RC4-128 \
   -out $certname-pkcs8.key \
   -outform pem \
   -passin pass:$password \
