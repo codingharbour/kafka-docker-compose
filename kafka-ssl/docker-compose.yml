@@ -2,7 +2,7 @@
 version: '2'
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:6.1.1
+    image: confluentinc/cp-zookeeper:7.1.0
     container_name: zookeeper
     volumes:
       - ./security:/etc/kafka/secrets
@@ -22,7 +22,7 @@ services:
       ZOOKEEPER_AUTH_PROVIDER_X509: org.apache.zookeeper.server.auth.X509AuthenticationProvider
 
   broker:
-    image: confluentinc/cp-kafka:6.1.1
+    image: confluentinc/cp-kafka:7.1.0
     depends_on:
       - zookeeper
     ports:
