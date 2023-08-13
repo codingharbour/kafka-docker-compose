@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -o allexport
+source .env set
+set +o allexport
+
 if [[ ! -f "security/root.crt" ]]; then
     DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 

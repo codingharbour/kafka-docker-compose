@@ -2,7 +2,7 @@
 version: '2'
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.1.0
+    image: confluentinc/cp-zookeeper:${CP_VERSION}
     ports:
       - 2181:2181
     environment:
@@ -28,7 +28,7 @@ services:
     # See https://rmoff.net/2018/08/02/kafka-listeners-explained/ for details
     # "`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-
     #
-    image: confluentinc/cp-kafka:7.1.0
+    image: confluentinc/cp-kafka:${CP_VERSION}
     depends_on:
       - zookeeper
     ports:
@@ -43,7 +43,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:7.1.0
+    image: confluentinc/cp-schema-registry:${CP_VERSION}
     depends_on:
       - zookeeper
       - kafka
