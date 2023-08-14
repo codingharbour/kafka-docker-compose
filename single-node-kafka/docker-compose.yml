@@ -1,15 +1,6 @@
 ---
 version: '2'
 services:
-  zookeeper:
-    image: confluentinc/cp-zookeeper:${CP_VERSION}
-    ports:
-      - 2181:2181
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    container_name: sn-zookeeper
-
   kafka:
     # "`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-
     # An important note about accessing Kafka from clients on other machines: 
@@ -29,15 +20,18 @@ services:
     # "`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-
     #
     image: confluentinc/cp-kafka:${CP_VERSION}
-    depends_on:
-      - zookeeper
     ports:
       - 9092:9092
     container_name: sn-kafka
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      # KAFKA_BROKER_ID: 1 # TODO: DO WE NEED THIS WITH NODE ID???
+      KAFKA_NODE_ID: 1
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_LISTENERS: CONTROLLER://kafka:39092,PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:39092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: 'controller,broker'
+      CLUSTER_ID: JHfgDKe6T0KIhYWD-aSzUg # you can generate this using '/bin/kafka-storage random-uuid'
