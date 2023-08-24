@@ -8,7 +8,7 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-    container_name: sna-zookeeper
+    container_name: sn-zookeeper
 
   kafka:
     # "`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-'"`-._,-
@@ -33,7 +33,7 @@ services:
       - zookeeper
     ports:
       - 9092:9092
-    container_name: sna-kafka
+    container_name: sn-kafka
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -49,7 +49,7 @@ services:
       - kafka
     ports: 
       - 8081:8081
-    container_name: sna-schema-registry
+    container_name: sn-schema-registry
     environment: 
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka:29092'
