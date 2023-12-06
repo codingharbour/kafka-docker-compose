@@ -46,10 +46,8 @@ services:
       KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE: 'true'
       KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET: org.apache.zookeeper.ClientCnxnSocketNetty
       KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/broker-keypair.pem
-      KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD: codingharbour
       KAFKA_ZOOKEEPER_SSL_KEYSTORE_TYPE: PEM
       KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/root.crt
-      KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD: codingharbour
       KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_TYPE: PEM
 
       # option 1: provide certs as strings
@@ -57,14 +55,12 @@ services:
       # KAFKA_SSL_KEYSTORE_TYPE: PEM
       # KAFKA_SSL_KEYSTORE_CERTIFICATE_CHAIN: -----BEGIN CERTIFICATE-----\nMII....\n-----END CERTIFICATE-----
       # KAFKA_SSL_KEYSTORE_KEY: -----BEGIN ENCRYPTED PRIVATE KEY-----\nMIIE...\n-----END ENCRYPTED PRIVATE KEY-----
-      # KAFKA_SSL_KEY_PASSWORD: codingharbour
       # KAFKA_SSL_TRUSTSTORE_TYPE: PEM
       # KAFKA_SSL_TRUSTSTORE_CERTIFICATES: -----BEGIN CERTIFICATE-----\nMIID...\n-----END CERTIFICATE-----
 
       # option 2: use pem files
 
       KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/broker-keypair.pem
-      KAFKA_SSL_KEY_PASSWORD: codingharbour
       KAFKA_SSL_KEYSTORE_TYPE: PEM
       KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/root.crt
       KAFKA_SSL_TRUSTSTORE_TYPE: PEM
